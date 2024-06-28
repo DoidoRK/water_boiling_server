@@ -1,0 +1,13 @@
+{
+  "name": "water_boiling_server",
+  "version": "1.0.0",
+  "description": "Server for the water boiling system",
+  "main": "src/index.js",
+  "repository": "https://github.com/DoidoRK/water_boiling_server.git",
+  "author": "DoidoRK <doidobr46@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "net": "^1.0.2"
+  }
+}
