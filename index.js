@@ -1,38 +1,10 @@
 const net = require('net');
 const os = require('os');
-const { MESSAGE_OP } = require('./types');
-
-const mock_params = {
-    "message_type": 3,
-    "system_settings": {
-        "input_valve_flow_speed": 150,
-        "middle_valve_flow_speed": 150,
-        "output_valve_flow_speed": 150,
-        "water_boiling_rate": 150,
-        "sensor_reading_timer": 100,
-        "water_tank_water_max_level": 95,
-        "water_tank_water_min_level": 20,
-        "boiling_tank_water_max_level": 95,
-        "boiling_tank_water_min_level": 20
-    },
-    "sensor_readings": {
-        "max_sensor_tank1": 0,
-        "min_sensor_tank1": 0,
-        "water_level_tank1": 0,
-        "temp_water_tank2": 27,
-        "max_sensor_tank2": 0,
-        "min_sensor_tank2": 0,
-        "water_level_tank2": 0,
-        "input_valve_status": 0,
-        "middle_valve_status": 0,
-        "output_valve_status": 0,
-        "resistance_status": 0,
-        "water_is_boiled": 0
-    }
-}
+const { MESSAGE_OP, MOCK_PARAMS } = require('./types');
+const { MAX_CLIENTS } = require('./config');
 
 const PORT = 8080;
-var startup = 0;
+
 var HOST = '0.0.0.0';
 var ips = os.networkInterfaces();
 Object
@@ -44,15 +16,30 @@ Object
       }) 
   });
 
-const server = net.createServer((socket) => {
-    console.log('Client connected');
+// Map to store connected clients with their IP addresses
+const connectedClients = new Map();
 
+
+const server = net.createServer((socket) => {
+    // Log client connection with IP address
+    const clientAddress = socket.remoteAddress;
+    console.log(`Client connected: ${clientAddress}`);
 
     socket.on('data', (data) => {
         console.log('Received data from client:', data.toString());
         switch (data.message_type) {
             case CONNECTION_ATTEMPT:
-                //Frontend client trying to connect to server
+                //new client trying to connect to server
+                // Check if maximum number of clients is reached
+                if (connectedClients.size >= MAX_CLIENTS && connectedClients.has(clientAddress)) {
+                    console.log('Max clients reached. Rejecting connection.');
+                    socket.destroy();
+                    return;
+                }
+
+                // Store client IP in the Map
+                connectedClients.set(socket, clientAddress);
+
                 //Gets this client data and saves it as current user
                 //If answers with a SERVER_CONNECTION_STABLISHED to tell the client it can control the system
                 
