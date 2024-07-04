@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "net": "^1.0.2"
+    "net": "^1.0.2",
+    "ws": "^8.18.0"
   }
 }

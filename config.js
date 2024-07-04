@@ -1,4 +1,4 @@
-// Maximum number of clients allowed
-const MAX_CLIENTS = 2;
+const TCP_PORT = 8080;
+const WS_PORT = 8081;
 
-module.exports = { MAX_CLIENTS };
+module.exports = { TCP_PORT, WS_PORT };
