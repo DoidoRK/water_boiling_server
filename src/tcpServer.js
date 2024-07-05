@@ -2,9 +2,12 @@ const net = require('net');
 const { MESSAGE_OP } = require('../types');
 const { HOST, TCP_PORT } = require('../config');
 
+const clients = new Set();
+
 const tcpServer = net.createServer((socket) => {
     const tcpClientAddress = socket.remoteAddress;
-    console.log(`Client connected: ${tcpClientAddress}`);
+    console.log(`TCP Client connected: ${tcpClientAddress}`);
+    clients.add(socket);
 
     socket.on('data', (data) => {
         console.log('Received data from client:', data.toString());
@@ -46,15 +49,27 @@ const tcpServer = net.createServer((socket) => {
 
     socket.on('end', () => {
         console.log('Client disconnected');
+        clients.delete(socket);
     });
 
     socket.on('error', (err) => {
         console.error('Socket error:', err);
+        clients.delete(socket);
     });
 });
 
-tcpServer.listen(TCP_PORT, HOST, () => {
-    console.log(`TCP Server listening on ${HOST}:${TCP_PORT}`);
-});
+tcpServer.start = (eventEmitter) => {
+    tcpServer.listen(TCP_PORT, HOST, () => {
+        console.log(`TCP Server listening on ${HOST}:${TCP_PORT}`);
+    });
+
+    eventEmitter.on('message', (message) => {
+        const data = JSON.stringify(message);
+        console.log('Sending data to TCP clients:', data);
+        clients.forEach((client) => {
+            client.write(data);
+        });
+    });
+};
 
 module.exports = tcpServer;
