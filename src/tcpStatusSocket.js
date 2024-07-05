@@ -15,7 +15,7 @@ const tcpStatusSocket = net.createServer((socket) => {
         switch (message.message_type) {
 
             case MESSAGE_OP.SYSTEM_STATUS:
-                // Handle system status update
+                console.log(data);
                 break;
 
             default:

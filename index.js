@@ -5,6 +5,6 @@ const wsCmdSocket = require('./src/wsCmdSocket')
 const { EventEmitter } = require('events');
 
 const WStoTCPEmitter = new EventEmitter();  //Front to Back comms
-tcpCmdSocket.start(WStoTCPEmitter);
 wsCmdSocket.start(WStoTCPEmitter);
+tcpCmdSocket.start(WStoTCPEmitter);
 
