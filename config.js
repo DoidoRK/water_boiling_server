@@ -12,7 +12,9 @@ Object.keys(ips).forEach((_interface) => {
     });
 });
 
-const TCP_PORT = 8080;
-const WS_PORT = 8081;
+const TCP_STATUS_PORT = 8080;
+const TCP_CMD_PORT = 8081;
+const WS_STATUS_PORT = 8082;
+const WS_CMD_PORT = 8083;
 
-module.exports = { HOST, TCP_PORT, WS_PORT };
+module.exports = { HOST, TCP_STATUS_PORT, TCP_CMD_PORT, WS_STATUS_PORT, WS_CMD_PORT };

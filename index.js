@@ -1,20 +1,10 @@
 const settings = require('./config');
-const wsServer = require('./src/webSocketServer');
-const tcpServer = require('./src/tcpServer');
+const tcpCmdSocket = require('./src/tcpCmdSocket')
+const tcpStatusSocket = require('./src/tcpStatusSocket');
+const wsCmdSocket = require('./src/wsCmdSocket')
 const { EventEmitter } = require('events');
 
-const eventEmitter = new EventEmitter();
+const WStoTCPEmitter = new EventEmitter();  //Front to Back comms
+tcpCmdSocket.start(WStoTCPEmitter);
+wsCmdSocket.start(WStoTCPEmitter);
 
-wsServer.start(eventEmitter);
-tcpServer.start(eventEmitter);
-
-// Handle shutdown
-process.on('SIGINT', () => {
-    console.log('Shutting down...');
-    tcpServer.close(() => {
-        wsServer.close(() => {
-            console.log('WS server closed');
-        });
-        console.log('TCP server closed');
-    });
-});

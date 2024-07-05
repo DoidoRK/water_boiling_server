@@ -1,19 +1,18 @@
 const WebSocket = require('ws');
 const { MESSAGE_OP } = require('../types');
-const { HOST, WS_STATUS_PORT } = require('../config');
+const { HOST, WS_CMD_PORT } = require('../config');
 
-const wsCmdSocket = new WebSocket.Server({ port: WS_STATUS_PORT }, () => {
-    console.log(`WebSocket server listening on ${HOST}:${WS_STATUS_PORT}`);
+const wsCmdSocket = new WebSocket.Server({ port: WS_CMD_PORT }, () => {
+    console.log(`WS Command Socket listening on ${HOST}:${WS_CMD_PORT}`);
 });
 
 wsCmdSocket.start = (eventEmitter) => {
     wsCmdSocket.on('connection', (ws) => {
         const wsClientAddress = ws.remoteAddress;
-        console.log(`TCP Client connected: ${wsClientAddress}`);
-        console.log('WebSocket client connected');
+        console.log(`WS Command Socket new client connected: ${wsClientAddress}`);
 
         ws.on('message', (data) => {
-            console.log('Received data from client:', data.toString());
+            console.log('WS Command Socket received data from client:', data.toString());
             const message = JSON.parse(data);
 
             switch (message.message_type) {
@@ -48,7 +47,7 @@ wsCmdSocket.start = (eventEmitter) => {
         });
 
         ws.on('close', () => {
-            console.log('WebSocket client disconnected on command port');
+            console.log('WS Command Socket client disconnected');
         });
     });
 };
