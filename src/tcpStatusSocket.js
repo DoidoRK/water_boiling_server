@@ -15,7 +15,9 @@ const tcpStatusSocket = net.createServer((socket) => {
         switch (message.message_type) {
 
             case MESSAGE_OP.SYSTEM_STATUS:
-                console.log(data);
+                const response = { status: 'success' };
+                socket.write(JSON.stringify(response));
+                //Redirect data to front end app.
                 break;
 
             default:

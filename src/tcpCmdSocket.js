@@ -11,8 +11,9 @@ const tcpCmdSocket = net.createServer((socket) => {
   clients.add(socket);
 
   socket.on('data', (data) => {
-    console.log('TCP Command Socket Received data from client:', data.toString());
-    const message = JSON.parse(data);
+    console.log('TCP Command Socket Received data from client:', data.toString());    
+    const response = { status: 'success' };
+    socket.write(JSON.stringify(response));
   });
 
   socket.on('end', () => {
