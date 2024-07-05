@@ -1,13 +1,13 @@
 const WebSocket = require('ws');
 const { MESSAGE_OP } = require('../types');
-const { HOST, WS_PORT } = require('../config');
+const { HOST, WS_STATUS_PORT } = require('../config');
 
-const wsServer = new WebSocket.Server({ port: WS_PORT }, () => {
-    console.log(`WebSocket server listening on ${HOST}:${WS_PORT}`);
+const wsCmdSocket = new WebSocket.Server({ port: WS_STATUS_PORT }, () => {
+    console.log(`WebSocket server listening on ${HOST}:${WS_STATUS_PORT}`);
 });
 
-wsServer.start = (eventEmitter) => {
-    wsServer.on('connection', (ws) => {
+wsCmdSocket.start = (eventEmitter) => {
+    wsCmdSocket.on('connection', (ws) => {
         const wsClientAddress = ws.remoteAddress;
         console.log(`TCP Client connected: ${wsClientAddress}`);
         console.log('WebSocket client connected');
@@ -30,10 +30,6 @@ wsServer.start = (eventEmitter) => {
                     eventEmitter.emit('message', message);
                     break;
 
-                case MESSAGE_OP.SYSTEM_STATUS:
-                    // Handle system status update
-                    break;
-
                 case MESSAGE_OP.SYSTEM_INTR:
                     // Handle system interrupt
                     break;
@@ -52,9 +48,9 @@ wsServer.start = (eventEmitter) => {
         });
 
         ws.on('close', () => {
-            console.log('WebSocket client disconnected');
+            console.log('WebSocket client disconnected on command port');
         });
     });
 };
 
-module.exports = wsServer;
+module.exports = wsCmdSocket;
