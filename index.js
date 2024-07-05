@@ -1,17 +1,6 @@
-const os = require('os');
+const settings = require('./config');
 const wsServer = require('./src/webSocketServer');
 const tcpServer = require('./src/tcpServer');
-let { HOST } = require('./config');
-
-// Determine host IP address dynamically
-var ips = os.networkInterfaces();
-Object.keys(ips).forEach((_interface) => {
-    ips[_interface].forEach((_dev) => {
-        if (_dev.family === 'IPv4' && !_dev.internal){
-            HOST = _dev.address;
-        }
-    });
-});
 
 // Handle shutdown
 process.on('SIGINT', () => {
