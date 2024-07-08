@@ -1,6 +1,6 @@
 const net = require('net');
 const { MESSAGE_OP } = require('../types');
-const { HOST, TCP_CMD_PORT } = require('../config');
+const { HOST, TCP_CMD_PORT, systemCurrentParams } = require('../config');
 const { cmdEmitter } = require('./emitters');
 
 const clients = new Set();
@@ -8,6 +8,10 @@ const clients = new Set();
 const tcpCmdSocket = net.createServer((socket) => {
   const tcpClientAddress = socket.remoteAddress;
   console.log(`TCP Command Socket new client connected: ${tcpClientAddress}`);
+  socket.write(JSON.stringify({
+    'message_type':1,
+    'system_settings':systemCurrentParams,
+  }));
 
   clients.add(socket);
 

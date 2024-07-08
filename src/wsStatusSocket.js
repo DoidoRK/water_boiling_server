@@ -15,16 +15,6 @@ wsStatusSocket.on('connection', (ws) => {
         console.log('WS Status Socket received data from client:', data.toString());
         const message = JSON.parse(data);
 
-        switch (message.message_type) {
-            case MESSAGE_OP.SYSTEM_STATUS:
-                
-                break;
-
-            default:
-                console.error('Unknown message type');
-                break;
-        }
-
         const response = { status: 'success' };
         ws.send(JSON.stringify(response));
     });

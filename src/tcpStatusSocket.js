@@ -12,18 +12,9 @@ const tcpStatusSocket = net.createServer((socket) => {
     socket.on('data', (data) => {
         console.log('TCP Status Socket received data:', data.toString());
         const message = JSON.parse(data);
-
-        switch (message.message_type) {
-            case MESSAGE_OP.SYSTEM_STATUS:
-                const response = { status: 'success' };
-                socket.write(JSON.stringify(response));
-                statusEmitter.emit('message', message);
-                break;
-
-            default:
-                console.error('Unknown message type');
-                break;
-        }
+        const response = { status: 'success' };
+        socket.write(JSON.stringify(response));
+        statusEmitter.emit('message', message);
     });
 
     socket.on('end', () => {
