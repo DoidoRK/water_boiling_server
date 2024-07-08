@@ -1,6 +1,7 @@
 const net = require('net');
 const { MESSAGE_OP } = require('../types');
 const { HOST, TCP_CMD_PORT } = require('../config');
+const { cmdEmitter } = require('./emitters');
 
 const clients = new Set();
 
@@ -28,18 +29,16 @@ const tcpCmdSocket = net.createServer((socket) => {
 });
 
 
-tcpCmdSocket.start = (eventEmitter) => {
-    tcpCmdSocket.listen(TCP_CMD_PORT, HOST, () => {
-        console.log(`TCP Command Socket listening on: ${HOST}:${TCP_CMD_PORT}`);
-    });
+tcpCmdSocket.listen(TCP_CMD_PORT, HOST, () => {
+    console.log(`TCP Command Socket listening on: ${HOST}:${TCP_CMD_PORT}`);
+});
 
-    eventEmitter.on('message', (message) => {
-        const data = JSON.stringify(message);
-        console.log('Sending data to TCP clients:', data);
-        clients.forEach((client) => {
-            client.write(data);
-        });
+cmdEmitter.on('message', (message) => {
+    const data = JSON.stringify(message);
+    console.log('Sending data to TCP clients:', data);
+    clients.forEach((client) => {
+        client.write(data);
     });
-};
+});
 
 module.exports = tcpCmdSocket;

@@ -1,6 +1,7 @@
 const net = require('net');
 const { MESSAGE_OP } = require('../types');
 const { HOST, TCP_STATUS_PORT } = require('../config');
+const { statusEmitter } = require('./emitters');
 
 const clients = new Set();
 
@@ -13,11 +14,10 @@ const tcpStatusSocket = net.createServer((socket) => {
         const message = JSON.parse(data);
 
         switch (message.message_type) {
-
             case MESSAGE_OP.SYSTEM_STATUS:
                 const response = { status: 'success' };
                 socket.write(JSON.stringify(response));
-                //Redirect data to front end app.
+                statusEmitter.emit('message', message);
                 break;
 
             default:
