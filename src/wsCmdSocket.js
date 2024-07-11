@@ -53,6 +53,11 @@ wsCmdSocket.on('connection', (ws) => {
                 systemCurrentParams.boiling_tank_water_max_level = message.system_settings.boiling_tank_water_max_level;
                 systemCurrentParams.boiling_tank_water_min_level = message.system_settings.boiling_tank_water_min_level;
                 cmdEmitter.emit('message', message);
+                clients.forEach((client)=>{
+                    if(!client.isOwner){
+                        client.send(JSON.stringify({systemParams: systemCurrentParams}))
+                    }
+                })
                 break;
 
             case MESSAGE_OP.SYSTEM_SHUTDOWN:
