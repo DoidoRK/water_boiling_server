@@ -3,14 +3,31 @@ const { MESSAGE_OP } = require('../types');
 const { HOST, WS_CMD_PORT, systemCurrentParams } = require('../config');
 const { cmdEmitter } = require('./emitters');
 
+let clients = [];
+let hasOwner = false;
+let isRunning = false;
+
+function generateUniqueId() {
+    return Math.random().toString(36).slice(2,9);
+}
+
 const wsCmdSocket = new WebSocket.Server({ port: WS_CMD_PORT }, () => {
     console.log(`WS Command Socket listening on ${HOST}:${WS_CMD_PORT}`);
 });
 
 wsCmdSocket.on('connection', (ws) => {
-    const wsClientAddress = ws.remoteAddress;
-    console.log(`WS Command Socket new client connected: ${wsClientAddress}`);
-    ws.send(JSON.stringify(systemCurrentParams));
+    ws.clientId = generateUniqueId();
+    if(!hasOwner){
+        hasOwner = true;
+        ws.isOwner = true;
+        ws.send(JSON.stringify({ hasOwner: false, isRunning: isRunning }));
+    } else {
+        ws.isOwner = false;
+        ws.send(JSON.stringify({ hasOwner: true,  isRunning: isRunning }));
+    }
+    console.log(`WS Command Socket new client connected: ${ws.clientId}`);
+    clients.push(ws);
+    ws.send(JSON.stringify({systemParams: systemCurrentParams}));
 
     ws.on('message', (data) => {
         console.log('WS Command Socket received data from client:', data.toString());
@@ -20,6 +37,7 @@ wsCmdSocket.on('connection', (ws) => {
             case MESSAGE_OP.SYSTEM_STARTUP:
                 // Forward message to TCP server
                 cmdEmitter.emit('message', message);
+                isRunning = true;
                 break;
 
             case MESSAGE_OP.SYSTEM_PARAM_CHANGE:
@@ -39,6 +57,7 @@ wsCmdSocket.on('connection', (ws) => {
 
             case MESSAGE_OP.SYSTEM_SHUTDOWN:
                 cmdEmitter.emit('message', message);
+                isRunning = false;
                 break;
 
             default:
@@ -46,12 +65,23 @@ wsCmdSocket.on('connection', (ws) => {
                 break;
         }
 
-        const response = { status: 'success' };
-        ws.send(JSON.stringify(response));
+        ws.send(JSON.stringify({ status: 'success' }));
     });
 
     ws.on('close', () => {
-        console.log('WS Command Socket client disconnected');
+        const index = clients.findIndex(client => client.clientId === ws.clientId);
+        console.log(`WS Command Socket client disconnected: ${clients[index].clientId}`);
+        if(clients.length > 1){
+            if(clients[index].isOwner === true){
+                clients.splice(index, 1)[0];
+                clients[0].isOwner = true;
+                clients[0].send(JSON.stringify({ hasOwner: false, isRunning: isRunning }));
+                clients[0].send(JSON.stringify({systemParams: systemCurrentParams}));
+            } 
+        } else {
+            hasOwner = false;
+        }
+        console.log(`WS Command clients still connected: ${clients.length}`);
     });
 });
 

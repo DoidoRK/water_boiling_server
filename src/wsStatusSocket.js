@@ -9,7 +9,7 @@ const wsStatusSocket = new WebSocket.Server({ port: WS_STATUS_PORT }, () => {
 
 wsStatusSocket.on('connection', (ws) => {
     const wsClientAddress = ws.remoteAddress;
-    console.log(`WS Status Socket new client connected: ${wsClientAddress}`);
+    console.log(`WS Status Socket new client connected!`);
 
     ws.on('message', (data) => {
         console.log('WS Status Socket received data from client:', data.toString());
