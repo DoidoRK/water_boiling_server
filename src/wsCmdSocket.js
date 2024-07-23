@@ -42,6 +42,8 @@ wsCmdSocket.on('connection', (ws) => {
 
             case MESSAGE_OP.SYSTEM_PARAM_CHANGE:
                 // Handle system param change
+                systemCurrentParams.water_supply_volume = message.system_settings.water_supply_volume;
+                systemCurrentParams.boiling_tank_volume = message.system_settings.boiling_tank_volume;
                 systemCurrentParams.input_valve_flow_speed = message.system_settings.input_valve_flow_speed;
                 systemCurrentParams.middle_valve_flow_speed = message.system_settings.middle_valve_flow_speed;
                 systemCurrentParams.output_valve_flow_speed = message.system_settings.output_valve_flow_speed;

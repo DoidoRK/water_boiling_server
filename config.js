@@ -18,6 +18,8 @@ const WS_STATUS_PORT = 8082;
 const WS_CMD_PORT = 8083;
 
 const systemCurrentParams = {
+    'water_supply_volume':100,
+    'boiling_tank_volume':100,
     'input_valve_flow_speed':150,
     'middle_valve_flow_speed':150,
     'output_valve_flow_speed':150,
